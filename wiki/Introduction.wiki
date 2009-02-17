@@ -35,28 +35,28 @@ This bot ignores whatever is happening and folds every time.  A fancier bot woul
 == Events ==
 
 === event format ===
-<type> <properties>
-'join' player_id credits
-'new_round'
-'button' player_id
-'big_blind' player_id
-'small_blind' player_id
-'deal' cards
-'flop' cards -> first three community cards
-'turn' card  -> fourth community card
-'river' card -> fifth community card
-'action' player_id action
-'adjust_credits'  player (+/-)amount
-'win' player rank amount -> there is also an adjust_credits event for this
+* <type> <properties>
+* 'join' player_id credits
+* 'new_round'
+* 'button' player_id
+* 'big_blind' player_id
+* 'small_blind' player_id
+* 'deal' cards
+* 'flop' cards -> first three community cards
+* 'turn' card  -> fourth community card
+* 'river' card -> fifth community card
+* 'action' player_id action
+* 'adjust_credits'  player (+/-)amount
+* 'win' player rank amount -> there is also an adjust_credits event for this
                             in the case that there are multiple winners
                             the rank will indicate who won first, second etc (int)
-'end_of_round'
-'quit' player_id
-'bad_bot' message action -> last action by your bot was determined to be invalid
+* 'end_of_round'
+* 'quit' player_id
+* 'bad_bot' message action -> last action by your bot was determined to be invalid
 
 === types ===
-credits: int
-player_id: int
-card: (rank, suit) -> (int, char) -> int is 2-14 for card value, char is one of 'd', 'h', 's', 'c'
-action: one of the actions from above
-message: str
+* credits: int
+* player_id: int
+* card: (rank, suit) -> (int, char) -> int is 2-14 for card value, char is one of 'd', 'h', 's', 'c'
+* action: one of the actions from above
+* message: str
