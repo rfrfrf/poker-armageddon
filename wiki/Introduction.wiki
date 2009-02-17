@@ -6,6 +6,8 @@ This is a Python framework to fight poker bots against each other.  It should so
 
 It's rough around the edges, and not yet tested at all.  There's an even chance you'll get a NotYetImplemented error as I haven't done the pot splitting yet, and the final round has a 50% chance of requiring it.
 
+To try it out, click on the source tab up top, check it out over SVN and run 'python main.py' in the folder you checked out.
+
 = Most Basic Bot =
 
 {{{
