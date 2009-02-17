@@ -35,7 +35,7 @@ This bot ignores whatever is happening and folds every time.  A fancier bot woul
 == Events ==
 
 === event format ===
-  * <type> <properties>
+  * (type) (properties)
   * 'join' player_id credits
   * 'new_round'
   * 'button' player_id
