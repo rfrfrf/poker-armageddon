@@ -35,12 +35,13 @@ void parse_commandline_options(int argc, char *argv[])
      for(size_t i = 1; i < argc; ++i)
      {
          string arg = string(argv[i]);
-         size_t i = arg.find(":");
-         if (i == string::npos) {
+         size_t pos = arg.find(":");
+         if (pos == string::npos) {
+             cerr << "foldbot: unrecognized arg '" << arg << "'" << endl;
              continue;
          }
-         string key = arg.substr(0, i);
-         string value = arg.substr(i+1);
+         string key = arg.substr(0, pos);
+         string value = arg.substr(pos+1);
          std::stringstream ss(value);
          int v;
          ss >> v;
