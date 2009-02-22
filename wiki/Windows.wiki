@@ -30,7 +30,7 @@ Download and install:
 
 Build:
  * Run the MSYS link on your desktop.
- * Put the protobuf sourcecode in "C:\msys\1.0\home\<username>".
+ * Put the protobuf sourcecode in "C:\msys\1.0\home\<username>".  No spaces in the path.
  * Follow the REAME file instructions for installing on Unix.
 
 == Java ==
