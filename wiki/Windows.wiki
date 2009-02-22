@@ -31,3 +31,8 @@ Download and install:
 Run the MSYS link on your desktop.  Add "c: /cygdrive/c" to your /etc/fstab, "mkdir -p /cygdrive/c", then relaunch MSYS.
 
 Follow the REAME file instructions for installing on Unix.
+
+== Java ==
+
+Download and install:
+ * [http://java.sun.com/javase/downloads/index.jsp Java JDK] 
