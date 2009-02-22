@@ -1,0 +1,4 @@
+bot overlay
+	threads
+		time limits
+	credits
