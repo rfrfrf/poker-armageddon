@@ -2,3 +2,5 @@
 *.o
 *.class
 *.jar
+build
+dist
