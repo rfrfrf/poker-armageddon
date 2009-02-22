@@ -1,11 +1,46 @@
 import poker_bot.PokerBot.Event;
 import poker_bot.PokerBot.Action;
 
+import poker_messaging.PokerMessaging;
+
 class TestSender {
   public static void main(String[] args) throws Exception {
-    System.out.println("Start this bitch");
+    System.err.println("Start this sender");
+    
+    Event.Builder message_builder = Event.newBuilder();
+    message_builder.setType(Event.Type.JOIN);
+    message_builder.setMessage("message 1");
+    PokerMessaging.send_message(System.out, message_builder.build());
+    
+    Event.Builder message_builder2 = Event.newBuilder();
+    message_builder2.setType(Event.Type.QUIT);
+    message_builder2.setMessage("message 2");
+    PokerMessaging.send_message(System.out, message_builder2.build());
+    
+    PokerMessaging.send_terminator(System.out);
   }
 }
+
+/*
+import java.io.*;
+
+class StdinParser {
+
+    public static void main(String[] args) {
+        byte[] byteBuf = new byte[4];
+
+        System.out.print("Input 4 bytes to be parsed as a 32 bit Integer: ");
+        try {
+            DataInputStream dis = new DataInputStream(System.in);
+            int givenInt = dis.readInt();
+
+            System.out.println("I read " + givenInt + " from you.");                
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+*/
 
 /*
 import com.example.tutorial.AddressBookProtos.AddressBook;

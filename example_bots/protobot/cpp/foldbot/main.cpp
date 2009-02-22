@@ -30,7 +30,7 @@ int credits;
 int small_blind_amount;
 int big_blind_amount;
 
-bool parse_commandline_options(int argc, char *argv[])
+void parse_commandline_options(int argc, char *argv[])
 {
      for(size_t i = 1; i < argc; ++i)
      {
@@ -105,7 +105,6 @@ void main_loop()
         }
         
         cerr << "foldbot: my turn" << endl;
-        // now it's my turn
         poker_bot::Action action = turn();
         send_message<poker_bot::Action>(cout, action);
     }

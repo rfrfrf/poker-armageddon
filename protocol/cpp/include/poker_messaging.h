@@ -82,7 +82,7 @@ bool receive_message(istream& in, MessageType& message)
 template <class MessageType>
 bool send_message(ostream& out, const MessageType& message)
 {
-    // convert the action into a string
+    // write a message to the output stream
     string encoded_message;
     if (!message.SerializeToString(&encoded_message)) {
         return false;
