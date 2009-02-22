@@ -25,6 +25,8 @@ class FoldBot(Bot):
 
 This bot ignores whatever is happening and folds every time.  A fancier bot would use some of the other actions:
 
+== Actions ==
+
 'fold',
     fold means you quit this round
 'call', 
@@ -36,7 +38,6 @@ This bot ignores whatever is happening and folds every time.  A fancier bot woul
 
 == Events ==
 
-=== event format ===
   * (type) (properties)
   * 'join' player_id credits
   * 'new_round'
@@ -48,8 +49,8 @@ This bot ignores whatever is happening and folds every time.  A fancier bot woul
   * 'turn' card  -> fourth community card
   * 'river' card -> fifth community card
   * 'action' player_id action
-  * 'adjust_credits'  player (+/-)amount
-  * 'win' player rank amount -> there is also an adjust_credits event for this
+  * 'adjust_credits'  player_id (+/-)amount
+  * 'win' player_id rank amount -> there is also an adjust_credits event for this
                             in the case that there are multiple winners
                             the rank will indicate who won first, second etc (int)
   * 'end_of_round'
