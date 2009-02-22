@@ -11,9 +11,9 @@ To run the poker framework on Windows, you'll need Python.  If you want to use C
 = C++ =
 
 Download and install:
-* [http://prdownloads.sourceforge.net/dev-cpp/devcpp-4.9.9.2_setup.exe Download Bloodshed C++]
-* [http://www.mingw.org/wiki/MSYS MSYS]
-* [http://www.mingw.org/wiki/HOWTO_Install_the_MinGW_GCC_Compiler_Suite MinGW] (comes with Bloodshed C++ too)
+ * [http://prdownloads.sourceforge.net/dev-cpp/devcpp-4.9.9.2_setup.exe Download Bloodshed C++]
+ * [http://www.mingw.org/wiki/MSYS MSYS]
+ * [http://www.mingw.org/wiki/HOWTO_Install_the_MinGW_GCC_Compiler_Suite MinGW] select at least the g++ option in the install (comes with Bloodshed C++ too)
 
 = Java =
 
