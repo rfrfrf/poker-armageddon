@@ -28,9 +28,10 @@ Download and install:
    * you have to download [http://downloads.sourceforge.net/mingw/gcc-g%2B%2B-3.4.5-20060117-3.tar.gz?use_mirror=mesh g++] manually
  * [http://www.mingw.org/wiki/MSYS MSYS]
 
-Run the MSYS link on your desktop.  Add "c: /cygdrive/c" to your /etc/fstab, "mkdir -p /cygdrive/c", then relaunch MSYS.
-
-Follow the REAME file instructions for installing on Unix.
+Build:
+ * Run the MSYS link on your desktop.
+ * Put the protobuf sourcecode in "C:\msys\1.0\home\<username>".
+ * Follow the REAME file instructions for installing on Unix.
 
 == Java ==
 
