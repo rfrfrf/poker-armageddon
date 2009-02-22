@@ -24,15 +24,15 @@ Set Dev-Cpp to use the installed MinGW (add {{{c:\mingw\bin;C:\msys\1.0\bin}}} t
 
 [http://www.netbeans.org/downloads/index.html Download Netbeans (Java bundle)] and install it unless you have your own compiler.
 
-= Building =
+= Building the Libraries =
 
 == C++ ==
-
 
 Build:
  * Run the MSYS link on your desktop.
  * Put the protobuf sourcecode in "C:\msys\1.0\home\username".  No spaces in the path.
  * Follow the REAME file instructions for installing on Unix.
+ * After the "make install" copy the libprotobuf.* files to a place where you can include them in your project.
 
 == Java ==
 
