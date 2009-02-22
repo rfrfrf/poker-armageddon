@@ -31,7 +31,7 @@ Set Dev-Cpp to use the installed MinGW (add {{{c:\mingw\bin;C:\msys\1.0\bin}}} t
 
 Build:
  * Run the MSYS link on your desktop.
- * Put the protobuf sourcecode in "C:\msys\1.0\home\<username>".  No spaces in the path.
+ * Put the protobuf sourcecode in "C:\msys\1.0\home\&lt;username&gt;".  No spaces in the path.
  * Follow the REAME file instructions for installing on Unix.
 
 == Java ==
