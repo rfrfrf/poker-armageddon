@@ -1,0 +1,20 @@
+#summary Running the framework in Windows
+
+= Introduction =
+
+To run the poker framework on Windows, you'll need Python.  If you want to use C++ or Java for your bot, follow the instructions for those languages as well.  For C++ and Java, the Python framework uses Google's [http://code.google.com/p/protobuf/ Protocol Buffers] to communicate over stdin and stdout with your bot.
+
+= Python =
+
+[http://www.python.org/ftp/python/2.6.1/python-2.6.1.msi Download Python 2.6.1] and install it. 
+
+= C++ =
+
+Download and install:
+* [http://prdownloads.sourceforge.net/dev-cpp/devcpp-4.9.9.2_setup.exe Download Bloodshed C++]
+* [http://www.mingw.org/wiki/MSYS MSYS]
+* [http://www.mingw.org/wiki/HOWTO_Install_the_MinGW_GCC_Compiler_Suite MinGW] (comes with Bloodshed C++ too)
+
+= Java =
+
+[http://www.netbeans.org/downloads/index.html Download Netbeans (Java bundle)] and install it unless you have your own compiler.
