@@ -1,7 +1,10 @@
 class Bot(object):
-    def __init__(self, id, credits, *args, **kwargs):
+    def __init__(self, id, initial_credits, big_blind_amount, small_blind_amount, *args, **kwargs):
         self.id = id
-        self.credits = credits
+        self.initial_credits = initial_credits
+        self.credits = self.initial_credits
+        self.big_blind_amount = big_blind_amount
+        self.small_blind_amount = small_blind_amount
         self.event_queue = []
     
     def turn(self):
