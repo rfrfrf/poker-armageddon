@@ -4,6 +4,7 @@ import logging
 import collections
 
 from cards import Deck, n_card_rank
+from messages import Event, Action
 
 # TODO: basic game
 # TODO: side-pot splitting
@@ -12,58 +13,6 @@ from cards import Deck, n_card_rank
 # TODO: player wrapper with credits, id, __str__ etc, move action sanitizing into there
 # TODO: example bot
 # TODO: protocol bot
-
-class KeywordObject(object):
-    def __init__(self, type, **kwargs):
-        self.type = type
-        for k,v in kwargs.iteritems():
-            setattr(self, k, v)
-        print "created: %s" % self.__str__()
-            
-    def __str__(self):
-        result = "<%s type=%s%s>"
-        attributes = ""
-        for k,v in sorted(self.__dict__.iteritems()):
-            if k.startswith('_') or k == 'type':
-                continue
-            attributes += " %s=%s" % (k, v)
-        return result % (self.__class__.__name__, self.type, attributes)
-
-# event format:
-# <type> <properties>
-# 'join' player_id credits
-# 'new_round'
-# 'button' player_id
-# 'big_blind' player_id
-# 'small_blind' player_id
-# 'deal' cards
-# 'flop' cards
-# 'turn' card  # fourth community card
-# 'river' card # fifth community card
-# 'action' player <Action>
-# 'adjust_credits'  player (+/-)amount
-# 'win' player rank amount -> there is also an adjust_credits event for this
-#                             in the case that there are multiple winners
-#                             the rank will indicate who won first, second etc (int)
-# 'end_of_round'
-# 'quit' player_id
-# 'bad_bot' message <Action> -> last action by your bot was determined to be invalid
-# 
-class Event(KeywordObject):
-    pass
-
-# action format:
-# 'fold',
-#    fold means you quit this round
-# 'call', 
-#    call means you match the current high bet
-# 'raise' amount
-#    raise means you match the current high bet and add some amount to it
-# 'check' (not available on first round, except for the big blind)
-#    a check is just a pass
-        
-class Action(KeywordObject):
-    pass
 
 class Pot(object):
     def __init__(self):
@@ -135,7 +84,7 @@ class PokerGame(object):
         self.small_blind_amount = small_blind_amount
         random.seed() # seed with, hopefully, /dev/urandom
         for id, bot in enumerate(bots):
-            bot_instance = bot(id=id, credits=initial_credits, small_blind_amount=self.small_blind_amount, big_blind_amount=self.big_blind_amount)
+            bot_instance = bot(id=id, initial_credits=initial_credits, small_blind_amount=self.small_blind_amount, big_blind_amount=self.big_blind_amount)
             self.players.append(bot_instance)
             self.id[bot_instance] = id
             self.credits[bot_instance] = initial_credits
@@ -164,10 +113,6 @@ class PokerGame(object):
         self.print_state()
                         
         while len(self.active_players) > 1:
-            button = self.active_players[(self.active_players.index(button)+1) % len(self.active_players)]
-            # determine next blinds, remove any players that are at 0 credits
-            # or can't pay the blind
-            button = self.remove_losers(button)
             self.broadcast_event(Event('new_round'))
             print "Round:",round_num
             round = Round(self, button)
@@ -176,6 +121,12 @@ class PokerGame(object):
             self.print_state()
             self.broadcast_event(Event('end_of_round'))
             round_num += 1
+            
+            button = self.active_players[(self.active_players.index(button)+1) % len(self.active_players)]
+            # determine next blinds, remove any players that are at 0 credits
+            # or can't pay the blind
+            button = self.remove_losers(button)
+            
         print "Game Over"
         winner = self.active_players[0]
         print "Game Winner: %s with credits %d" % (winner, self.credits[winner])
@@ -311,7 +262,7 @@ class Round(object):
     def betting_round(self, n, button, pot):
         player_bets = {}
         has_bet = {}
-        
+        # TODO: don't let player keep betting if it's just him and all_in guys
         for player in self.players:
             player_bets[player] = 0
             
@@ -383,17 +334,17 @@ class Round(object):
                     warn('tried to check after bet was made, folding')
                     action = Action('fold')
                 else:
-                    self.game.broadcast_event(Event('check', player_id=self.game.id[current_player]))
                     has_bet[player] = True
                 
             if action.type == 'fold':
-                self.game.broadcast_event(Event('fold', player_id=self.game.id[current_player]))
                 next_player = self.next_player(current_player)
                 self.players.remove(current_player)
-                current_player = next_player
             else:
-                current_player = self.next_player(current_player)
+                next_player = self.next_player(current_player)
                 
+            self.game.broadcast_event(Event('action', action=action, player_id=self.game.id[current_player]))
+            current_player = next_player
+                    
             if len(self.players) == 1:
                 winner = self.players[0]
                 print "Player %s won when everyone else folded" % winner
@@ -412,7 +363,8 @@ class Round(object):
         hand_ranks = []
         for player in self.players:
             cards = community_cards + hole_cards[player]
+            hand_rank = n_card_rank(cards)
             print "Player: %s with %s using cards %s" % (player, hand_rank, cards)
-            hand_ranks.append((n_card_rank(cards), player))
+            hand_ranks.append((hand_rank, player))
         return hand_ranks
             
