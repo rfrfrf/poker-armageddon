@@ -6,4 +6,5 @@ protocols:
 	touch protocol/python/protocol/__init__.py
 
 clean:
-	rm -f -r $(PROTOCOLS)
+	rm -f -r $(PROTOCOLS) **/*.pyc **/*.class **/*.o
+	#rm -f -r protocol/cpp/protocol/* protocol/java/protocol/* protocol/python/protocol/* **/*.pyc **/*.class **/*.o

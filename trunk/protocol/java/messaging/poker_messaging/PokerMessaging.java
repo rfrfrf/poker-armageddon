@@ -1,65 +1,71 @@
 package poker_messaging;
 
-final const LENGTH_BYTES = 4;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.IOException;
 
-/*
-def receive_message(f, message_class):
-    # get a message of the specified type from the input stream, return true
-    # on success, false on failure
-    length = f.read(LENGTH_BYTES)
-    if len(length) < LENGTH_BYTES:
-        raise Exception("Unexpected end of stream while reading length")
-        
-    bytes = 0
-    for c in length:
-        bytes <<= 8
-        bytes |= ord(c)
-    
-    message_str = f.read(bytes)
-    if len(message_str) < bytes:
-        raise Exception("Unexpected end of stream while reading message")
-    
-    message = message_class()
-    message.ParseFromString(message_str)
-    return message
-        
-def send_message(f, message):
-    # convert the action into a string
-    s = message.SerializeToString()
-    bytes = len(s)
-    for i in reversed(range(LENGTH_BYTES)):
-        byte = (bytes >> 8*i) & 0xFF
-        f.write(chr(byte))
-    f.write(s)
-    f.flush()
-    
-def send_terminator(f):
-    # terminate a stream
-    for i in range(LENGTH_BYTES):
-      f.write(chr(0))
-*/
+import com.google.protobuf.Message;
+
+import poker_bot.PokerBot.Event;
+import poker_bot.PokerBot.Action;
       
 public final class PokerMessaging {
-  private PokerMessaging() {}
-}
-
-/*
-import java.io.*;
-
-class StdinParser {
-
-    public static void main(String[] args) {
-        byte[] byteBuf = new byte[4];
-
-        System.out.print("Input 4 bytes to be parsed as a 32 bit Integer: ");
-        try {
-            DataInputStream dis = new DataInputStream(System.in);
-            int givenInt = dis.readInt();
-
-            System.out.println("I read " + givenInt + " from you.");                
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static final int LENGTH_BYTES = 4;
+    
+    public static boolean read_bytes(InputStream in, byte[] byte_array) throws IOException {
+        // read as many bytes as can be fit in the byte array
+        // return true on success, false on failure
+        
+        for (int i = 0; i < byte_array.length; i++) {
+            int read =  in.read(byte_array, i, 1);
+            if (read == 0) {
+                // EOF
+                return false;
+            }
         }
+        return true;
+    }
+    
+    public static boolean receive_message(InputStream in, Message.Builder message_builder) throws IOException {
+        // get a message of the specified type from the input stream, return true
+        // on success, false on failure
+        
+        message_builder.clear();
+        byte[] length_byte_array = new byte[LENGTH_BYTES];
+        if (!read_bytes(in, length_byte_array)) {
+            throw new IOException("Unexpected end of stream while reading length");
+        }
+        int bytes = 0;
+        for (int i = 0; i < LENGTH_BYTES; i++) {
+            bytes <<= 8;
+            bytes |= length_byte_array[i];
+        }
+        if (bytes == 0) {
+            return false;
+        }
+        byte[] event_byte_array = new byte[bytes];
+        if (!read_bytes(in, event_byte_array)) {
+            throw new IOException("Unexpected end of stream while reading message");
+        }
+        message_builder.mergeFrom(event_byte_array);
+        return true;
+    }
+    
+    public static void send_message(PrintStream out, Message message) throws IOException {
+        // write a message to the output stream
+        byte[] event_byte_array = message.toByteArray();
+        int bytes = event_byte_array.length;
+        byte[] length_byte_array = new byte[LENGTH_BYTES];
+        for (int i = 0; i < LENGTH_BYTES; i++) {
+            length_byte_array[i] = (byte) ((bytes >> 8*(LENGTH_BYTES-1-i)) & 0xFF);
+        }
+        out.write(length_byte_array);
+        out.write(event_byte_array);
+    }
+    
+    public static void send_terminator(PrintStream out) throws IOException {
+        // terminate a stream
+        byte[] terminator = new byte[LENGTH_BYTES];
+        out.write(terminator);
     }
 }
-*/

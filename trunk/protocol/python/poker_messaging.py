@@ -23,7 +23,7 @@ def receive_message(f, message_class):
     return message
         
 def send_message(f, message):
-    # convert the action into a string
+    # write a message to the output stream
     s = message.SerializeToString()
     bytes = len(s)
     for i in reversed(range(LENGTH_BYTES)):
