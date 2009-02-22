@@ -4,7 +4,9 @@ from poker_game import PokerGame
 
 def main():
    from example_bot import ExampleBot
-   bots = [ExampleBot, ExampleBot]
+   #from example_bots.protobot.cpp.foldbot_cpp import FoldBot
+   from example_bots.protobot.java.foldbot_java import FoldBot
+   bots = [ExampleBot, FoldBot]
    game = PokerGame(bots=bots)
    start_time = time.time()
    outcome = game.run()
