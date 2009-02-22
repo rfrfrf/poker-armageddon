@@ -44,44 +44,33 @@ public class Main {
     }
 
     public static void parse_commandline_options(String[] args) {
-     /*    for(size_t i = 1; i < argc; ++i)
-              {
-                  string arg = string(argv[i]);
-                  size_t i = arg.find(":");
-                  if (i == string::npos) {
-                      continue;
-                  }
-                  string key = arg.substr(0, i);
-                  string value = arg.substr(i+1);
-                  std::stringstream ss(value);
-                  int v;
-                  ss >> v;
-                  // check if the string conversion worked
-                  if (!ss) {
-                      cerr << "foldbot: could not convert '" << value << "' to int" << endl;
-                      continue;
-                  }
-                  if (key == "id")
-                  {
-                      id = v;
-                  }
-                  else if (key == "initial_credits")
-                  {
-                      credits = v;
-                  }
-                  else if (key == "small_blind_amount")
-                  {
-                      small_blind_amount = v;
-                  }
-                  else if (key == "big_blind_amount")
-                  {
-                      big_blind_amount = v;
-                  }
-                  else
-                  {
-                      cerr << "foldbot: unrecognized key '" << key << "'" << endl;
-                  }
-              }*/
+        for (int i = 1; i < args.length; i++)
+        {
+            String arg = args[i];
+            int pos = arg.indexOf(':');
+            if (pos == -1) {
+                System.err.println("foldbot: unrecognized option '" + arg + "'");
+                continue;
+            }
+            String key = arg.substring(0, pos);
+            String value = arg.substring(pos+1);
+            int v = Integer.parseInt(value);
+            if (key.equals("id")) {
+                id = v;
+            }
+            else if (key.equals("initial_credits")) {
+                credits = v;
+            }
+            else if (key.equals("small_blind_amount")) {
+                small_blind_amount = v;
+            }
+            else if (key.equals("big_blind_amount")) {
+                big_blind_amount = v;
+            }
+            else {
+                System.err.println("foldbot: unrecognized key '" + key + "'");
+            }
+        }
     }
 
     public static Action turn() {
