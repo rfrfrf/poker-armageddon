@@ -23,7 +23,18 @@ class FoldBot(Bot):
         return Action('fold')
 }}}
 
-This bot ignores whatever is happening and folds every time.  A fancier bot would use some of the other actions:
+This bot ignores whatever is happening and folds every time.  A fancier bot would use some of the other actions.
+
+The actions and events are instances of objects with the specified properties implemented as member variables.  The type of each is stored in the .type variable.  For instance the following Action:
+{{{
+Action('raise',amount=2)
+}}}
+
+Has the following properties:
+{{{
+Action.type == 'raise'
+Action.amount == 2
+}}}
 
 == Actions ==
 
