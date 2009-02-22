@@ -19,9 +19,14 @@ protocol/poker_bot.proto.
 
 from subprocess import Popen, PIPE, STDOUT
 import os
+import sys
+
+# add the protobuf libraries to the python path
+path = os.path.join(os.path.dirname(__file__), 'protocol/python/lib')
+sys.path.append(os.path.abspath(path))
 
 import protocol.python.protocol.poker_bot_pb2 as protocol
-import protocol.python.poker_messaging as messaging
+import protocol.python.lib.poker_messaging as messaging
 
 from messages import Event, Action
 from bot import Bot
