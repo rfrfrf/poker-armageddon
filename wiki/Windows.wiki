@@ -32,7 +32,7 @@ Build:
  * Run the MSYS link on your desktop.
  * Put the protobuf sourcecode in "C:\msys\1.0\home\username".  No spaces in the path.
  * Follow the REAME file instructions for installing on Unix.
- * After the "make install" copy the libprotobuf.* files to a place where you can include them in your project.
+ * After the "make install" copy the libprotobuf files to a place where you can include them in your project.
 
 == Java ==
 
