@@ -1,5 +1,5 @@
 import time
-
+import platform
 from poker_game import PokerGame
 
 def main():
@@ -13,6 +13,8 @@ def main():
    end_time = time.time()
    print "Result:", outcome
    print "Time elapsed:", (end_time - start_time), "seconds"
+   if platform.system() = 'Windows':
+       raw_input('Press enter to continue')
 
 if __name__ == "__main__":
     import sys
