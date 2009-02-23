@@ -1,8 +1,13 @@
 import os
+import system
+
 this_dir = os.path.dirname(os.path.realpath( __file__ ))
 
 from proto_bot import ProtoBot
 
 class FoldBot(ProtoBot):
-    command = [os.path.join(this_dir, 'foldbot/foldbot')]
+    if platform.system() == 'Windows':
+        command = [os.path.join(this_dir, 'foldbot/foldbot.exe')]
+    else:
+        command = [os.path.join(this_dir, 'foldbot/foldbot')]
     output_stderr = True

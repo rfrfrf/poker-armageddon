@@ -20,7 +20,7 @@ if __name__ == "__main__":
     import sys
     try:
         sys.exit(main())
-    except Exception as e:
+    except Exception, e:
         traceback.print_exc()
         if platform.system() == 'Windows':
-            raw_input('Press enter to continue')
+            raw_input('\nPress enter to continue')
