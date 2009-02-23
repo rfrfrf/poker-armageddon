@@ -54,7 +54,7 @@ void parse_commandline_options(int argc, char *argv[])
          {
              id = v;
          }
-         else if (key == "initial_credits")
+         else if (key == "credits")
          {
              credits = v;
          }
@@ -118,12 +118,10 @@ int main(int argc, char *argv[])
     
     parse_commandline_options(argc, argv);
 
-#ifdef DEBUG
     cerr << "id: " << id << endl;
     cerr << "credits: " << credits << endl;
     cerr << "small_blind_amount: " << small_blind_amount << endl;
     cerr << "big_blind_amount: " << big_blind_amount << endl;
-#endif
     
     // main bot loop
     main_loop();

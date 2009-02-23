@@ -126,11 +126,12 @@ class ProtoBot(Bot):
         # spawn the process
         cmd = self.command + \
                 [
-                    'initial_credits:%d' % self.initial_credits,
+                    'credits:%d' % self.initial_credits,
                     'id:%d' % self.id,
                     'small_blind_amount:%d' % self.small_blind_amount,
                     'big_blind_amount:%d' % self.big_blind_amount,
                 ]
+        print "Running ProtoBot %s" % cmd
         if self.output_stderr:
             self.stderr = None
         else:
