@@ -26,6 +26,7 @@ Run 'main.py' in your checked out repository.
     * [http://www.mingw.org/wiki/MSYS MSYS]
   # Set Dev-Cpp to use the installed MinGW (add {{{c:\mingw\bin;C:\msys\1.0\bin}}} to your PATH environment variable)
   # Build example bot in {{{example_bots/java/foldbot}}}, comes with a Dev-Cpp project that should just work out of the box.
+  # Edit main.py to use your bot
 
 == Java ==
 
@@ -33,6 +34,7 @@ Run 'main.py' in your checked out repository.
     * [http://www.netbeans.org/downloads/index.html Download Netbeans (Java bundle)] and install it unless you have your own compiler.
     * [http://java.sun.com/javase/downloads/index.jsp Java JDK]
   # Build example project in {{{example_bots/java/foldbot}}}
+  # Edit main.py to use your bot
 
 = Building the Libraries =
 
