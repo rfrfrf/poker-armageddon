@@ -1,5 +1,5 @@
 import os
-import system
+import platform
 
 this_dir = os.path.dirname(os.path.realpath( __file__ ))
 
