@@ -44,7 +44,7 @@ public class Main {
     }
 
     public static void parse_commandline_options(String[] args) {
-        for (int i = 1; i < args.length; i++)
+        for (int i = 0; i < args.length; i++)
         {
             String arg = args[i];
             int pos = arg.indexOf(':');
@@ -55,10 +55,11 @@ public class Main {
             String key = arg.substring(0, pos);
             String value = arg.substring(pos+1);
             int v = Integer.parseInt(value);
+            System.err.println("foldbot: got arg " + key + ":" + value);
             if (key.equals("id")) {
                 id = v;
             }
-            else if (key.equals("initial_credits")) {
+            else if (key.equals("credits")) {
                 credits = v;
             }
             else if (key.equals("small_blind_amount")) {
