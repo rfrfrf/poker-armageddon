@@ -10,7 +10,7 @@ To run the poker framework on Windows, you'll need Python.  In addition to that,
 
 == All Languages ==
 
-If you don't have SVN installed, get [http://tortoisesvn.net/ TortoiseSVN] then use it to check out "http://poker-armageddon.googlecode.com/svn/trunk/".
+If you don't have SVN installed, get [http://tortoisesvn.net/ TortoiseSVN] then use it to check out http://poker-armageddon.googlecode.com/svn/trunk/
 
 Download and install:
  * [http://www.python.org/ftp/python/2.6.1/python-2.6.1.msi Python 2.6.1]
