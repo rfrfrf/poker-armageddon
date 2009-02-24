@@ -397,12 +397,6 @@ class Event : public ::google::protobuf::Message {
   inline void set_message(const char* value);
   inline ::std::string* mutable_message();
   
-  // optional .poker_bot.Event event = 11;
-  inline bool has_event() const;
-  inline void clear_event();
-  inline const ::poker_bot::Event& event() const;
-  inline ::poker_bot::Event* mutable_event();
-  
  private:
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   mutable int _cached_size_;
@@ -417,10 +411,9 @@ class Event : public ::google::protobuf::Message {
   ::google::protobuf::uint32 rank_;
   ::std::string* message_;
   static const ::std::string _default_message_;
-  ::poker_bot::Event* event_;
   friend void protobuf_BuildDesc_protocol_2fpoker_5fbot_2eproto_AssignGlobalDescriptors(
       const ::google::protobuf::FileDescriptor* file);
-  ::google::protobuf::uint32 _has_bits_[(10 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
   
   // WHY DOES & HAVE LOWER PRECEDENCE THAN != !?
   inline bool _has_bit(int index) const {
@@ -693,23 +686,6 @@ inline ::std::string* Event::mutable_message() {
     message_ = new ::std::string;
   }
   return message_;
-}
-
-// optional .poker_bot.Event event = 11;
-inline bool Event::has_event() const {
-  return _has_bit(9);
-}
-inline void Event::clear_event() {
-  if (event_ != NULL) event_->::poker_bot::Event::Clear();
-  _clear_bit(9);
-}
-inline const ::poker_bot::Event& Event::event() const {
-  return event_ != NULL ? *event_ : *default_instance_->event_;
-}
-inline ::poker_bot::Event* Event::mutable_event() {
-  _set_bit(9);
-  if (event_ == NULL) event_ = new ::poker_bot::Event;
-  return event_;
 }
 
 

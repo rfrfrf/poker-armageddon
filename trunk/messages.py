@@ -3,7 +3,7 @@ class KeywordObject(object):
         self.type = type
         for k,v in kwargs.iteritems():
             setattr(self, k, v)
-        print "created: %s" % self.__str__()
+        #print "created: %s" % self.__str__()
             
     def __str__(self):
         result = "<%s type=%s%s>"

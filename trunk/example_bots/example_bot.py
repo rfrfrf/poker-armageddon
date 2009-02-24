@@ -3,11 +3,13 @@ from poker_game import Action
 
 class ExampleBot(Bot):
     def turn(self):
-        print "Bot %d events in queue:" % self.id
-        for event in self.event_queue:
-            print event
+        self.output("my turn")
+        self.output("%d events in queue" % len(self.event_queue))
         self.event_queue = []
         if self.id == 1:
             return Action('fold')
         else:
             return Action('raise', amount=20)
+    
+    def output(self, msg):
+        print "ExampleBot(%d): %s" % (self.id, msg)

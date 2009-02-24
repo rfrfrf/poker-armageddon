@@ -261,13 +261,6 @@ _EVENT = descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-    descriptor.FieldDescriptor(
-      name='event', full_name='poker_bot.Event.event', index=9,
-      number=11, type=11, cpp_type=10, label=1,
-      default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
   ],
   extensions=[
   ],
@@ -284,7 +277,6 @@ _EVENT.fields_by_name['type'].enum_type = _EVENT_TYPE
 _EVENT.fields_by_name['cards'].message_type = _EVENT_CARD
 _EVENT.fields_by_name['card'].message_type = _EVENT_CARD
 _EVENT.fields_by_name['action'].message_type = _ACTION
-_EVENT.fields_by_name['event'].message_type = _EVENT
 
 class Action(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType

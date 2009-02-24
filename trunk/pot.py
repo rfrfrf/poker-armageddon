@@ -4,6 +4,15 @@ Should handle any sort of combination of ties and players being all in.
 """
 
 import collections
+        
+class InsufficientBet(Exception):
+    def __init__(self, player, amount):
+        self.player = player
+        self.amount = amount
+        
+class AlreadyAllIn(Exception):
+    def __init__(self, player):
+        self.player = player
 
 class Pot(object):
     """
