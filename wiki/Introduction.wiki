@@ -2,7 +2,7 @@
 
 = Introduction =
 
-This is a Python framework to fight poker bots against each other.  It supports bots in C++ and Java using [http://code.google.com/apis/protocolbuffers/docs/overview.html protocol buffers].  For how to use C++ and Java see LanguagesThatAreNotPython.
+This is a Python framework to fight poker bots against each other.  It supports bots in C++ and Java using [http://code.google.com/apis/protocolbuffers/docs/overview.html protocol buffers].  For how to use C++ and Java see LanguagesThatAreNotPython.  I recommend that you try this introduction page first to get vaguely familiar with the Python side before using another language.
 
 It's rough around the edges, and not yet tested at all.  There's an even chance you'll get a NotYetImplemented error as I haven't done the pot splitting yet, and the final round has a 50% chance of requiring it.
 
