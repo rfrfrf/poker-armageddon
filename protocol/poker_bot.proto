@@ -59,7 +59,7 @@ message Event {
   // used for TURN, RIVER:
   optional Card card = 6;
   
-  // used for ACTION:
+  // used for ACTION, BAD_BOT:
   optional Action action = 7;
   
   // used for WIN:
@@ -67,5 +67,4 @@ message Event {
   
   // used for BAD_BOT:
   optional string message = 10;
-  optional Event event = 11;
 }

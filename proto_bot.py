@@ -48,8 +48,19 @@ else:
     def continue_process(p):
         os.kill(p.pid, signal.SIGCONT)
 
-
 # conversion functions
+def card_to_pbcard(card, pb_card):
+    # modifies passed in pb_card
+    value, suit = card
+    pb_card.value = value
+    full_suit = {
+        'h': 'HEARTS',
+        'd': 'DIAMONDS',
+        's': 'SPADES',
+        'c': 'CLUBS',
+    }[suit]
+    pb_card.suit = getattr(protocol.Event.Card, full_suit)
+    
 def event_to_pbevent(event):
     """
     Convert an Event object into a Protocol Buffer Event.
@@ -57,7 +68,7 @@ def event_to_pbevent(event):
     pb_event = protocol.Event()
     # any properties that the event object has need to be set on
     # the protocol_event
-    keys = [key for key in dir(event) if not key.startswith('_') and key not in ['type', 'cards', 'action']]
+    keys = [key for key in dir(event) if not key.startswith('_') and key not in ['type', 'cards', 'action', 'card']]
     for key in keys:
         setattr(pb_event, key, getattr(event, key))
     # set type
@@ -69,15 +80,10 @@ def event_to_pbevent(event):
     if hasattr(event, 'cards'):
         pb_card = pb_event.cards.add()
         for card in event.cards:
-            value, suit = card
-            pb_card.value = value
-            full_suit = {
-                'h': 'HEARTS',
-                'd': 'DIAMONDS',
-                's': 'SPADES',
-                'c': 'CLUBS',
-            }[suit]
-            pb_card.suit = getattr(protocol.Event.Card, full_suit)
+            card_to_pbcard(card, pb_card)
+    # set card, if applicable
+    if hasattr(event, 'card'):
+        card_to_pbcard(event.card, pb_event.card)
     # set action, if applicable
     if hasattr(event, 'action'):
         pb_event.action.CopyFrom(action_to_pb_action(event.action))

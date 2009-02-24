@@ -2,3 +2,10 @@ bot overlay
 	threads
 		time limits
 	credits
+	RaiseTwentyBot fixes
+	
+receive_event instead of receive_message
+better foldbot.py
+wrapper classes for protocol buffer classes?
+
+fixed .card on event object, fixed error in protocol definition (unused event property) -> test
