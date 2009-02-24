@@ -8,25 +8,16 @@ from messages import Event, Action
 from pot import Pot
 
 # TODO: basic game
-# TODO: side-pot splitting
 # TODO: correct handling of heads_up -> button selection etc
 # TODO: logging module
 # TODO: player wrapper with credits, id, __str__ etc, move action sanitizing into there
 # TODO: example bot
-# TODO: protocol bot
+# TODO: less retarded example bot
+# TODO: more docs
 
 class WinByDefault(Exception):
     def __init__(self, winner):
         self.winner = winner
-        
-class InsufficientBet(Exception):
-    def __init__(self, player, amount):
-        self.player = player
-        self.amount = amount
-        
-class AlreadyAllIn(Exception):
-    def __init__(self, player):
-        self.player = player
 
 class PokerGame(object):
     def __init__(self, bots, initial_credits=10000, num_decks=1,
@@ -64,15 +55,15 @@ class PokerGame(object):
                     event = Event('join', player_id=self.id[player], credits=self.credits[player])
                     self.send_event(other_player, event)
         
-        print "Start of Game State:"
+        self.output("Start of Game State:")
         self.print_state()
                         
         while len(self.active_players) > 1:
             self.broadcast_event(Event('new_round'))
-            print "Round:",round_num
+            self.output("Round: %d" % round_num)
             round = Round(self, button)
             round.run()
-            print "End of Round State:"
+            self.output("End of Round State:")
             self.print_state()
             self.broadcast_event(Event('end_of_round'))
             round_num += 1
@@ -82,14 +73,14 @@ class PokerGame(object):
             # or can't pay the blind
             button = self.remove_losers(button)
             
-        print "Game Over"
+        self.output("Game Over")
         winner = self.active_players[0]
-        print "Game Winner: %s with credits %d" % (winner, self.credits[winner])
+        self.output("Game Winner: %s with credits %d" % (winner, self.credits[winner]))
         return (winner, self.credits[winner])
             
     def print_state(self):
         for player in self.active_players:
-            print "\t",player,"with credits",self.credits[player]
+            self.output("\t%s with credits %d" % (player, self.credits[player]))
             
     def remove_losers(self, button):
         # find anyone with no money
@@ -101,16 +92,15 @@ class PokerGame(object):
                     button_index = (i+1) % len(self.active_players)
                     button = self.active_players[button_index]
                 self.remove_loser(player)
-                
         return button
     
     def broadcast_event(self, event):
-        print "Broadcast Event: %s" % event
+        self.output("Broadcast Event: %s" % event)
         for player in self.active_players:
             player.event_queue.append(event)
             
     def send_event(self, player, event):
-        print "Event to player %d: %s" % (self.id[player], event)
+        self.output("Event to player %d: %s" % (self.id[player], event))
         player.event_queue.append(event)
             
     def remove_loser(self, player):
@@ -120,6 +110,9 @@ class PokerGame(object):
     def adjust_credits(self, player, amount):
         self.credits[player] += amount
         self.broadcast_event(Event('adjust_credits', player_id=self.id[player], amount=amount))
+    
+    def output(self, msg):
+        print "Dealer: %s" % msg
         
 class Round(object):
     def __init__(self, game, button):
@@ -235,7 +228,7 @@ class Round(object):
         while True:
             # if player is all in, he does not get another turn
             if self.all_in[current_player]:
-                print "Player is all in, skipping", current_player
+                self.game.output("Player is all in, skipping %s" % current_player)
                 current_player = self.next_player(current_player)
                 continue
             
@@ -303,7 +296,7 @@ class Round(object):
                     
             if len(self.players) == 1:
                 winner = self.players[0]
-                print "Player %s won when everyone else folded" % winner
+                self.game.output("Player %s won when everyone else folded" % winner)
                 raise WinByDefault(winner)
                 
             # break out of this loop if all players have bet
@@ -312,7 +305,7 @@ class Round(object):
                     break
             else:
                 break
-        print "End of betting round %d" % n
+        self.game.output("End of betting round %d" % n)
             
     def determine_ranking(self, community_cards, hole_cards):
         # determine the best hand for each player
@@ -320,6 +313,6 @@ class Round(object):
         for player in self.players:
             cards = community_cards + hole_cards[player]
             hand_rank = n_card_rank(cards)
-            print "Player: %s with %s using cards %s" % (player, hand_rank, cards)
+            self.game.output("Player: %s with %s using cards %s" % (player, hand_rank, cards))
             hand_ranks.append((hand_rank, player))
         return hand_ranks

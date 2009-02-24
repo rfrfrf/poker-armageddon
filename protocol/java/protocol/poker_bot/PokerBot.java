@@ -661,12 +661,6 @@ public final class PokerBot {
     public boolean hasMessage() { return hasMessage; }
     public java.lang.String getMessage() { return message_; }
     
-    // optional .poker_bot.Event event = 11;
-    private boolean hasEvent;
-    private poker_bot.PokerBot.Event event_ = poker_bot.PokerBot.Event.getDefaultInstance();
-    public boolean hasEvent() { return hasEvent; }
-    public poker_bot.PokerBot.Event getEvent() { return event_; }
-    
     public static poker_bot.PokerBot.Event parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1001,40 +995,6 @@ public final class PokerBot {
         result.message_ = "";
         return this;
       }
-      
-      // optional .poker_bot.Event event = 11;
-      public boolean hasEvent() {
-        return result.hasEvent();
-      }
-      public poker_bot.PokerBot.Event getEvent() {
-        return result.getEvent();
-      }
-      public Builder setEvent(poker_bot.PokerBot.Event value) {
-        result.hasEvent = true;
-        result.event_ = value;
-        return this;
-      }
-      public Builder setEvent(poker_bot.PokerBot.Event.Builder builderForValue) {
-        result.hasEvent = true;
-        result.event_ = builderForValue.build();
-        return this;
-      }
-      public Builder mergeEvent(poker_bot.PokerBot.Event value) {
-        if (result.hasEvent() &&
-            result.event_ != poker_bot.PokerBot.Event.getDefaultInstance()) {
-          result.event_ =
-            poker_bot.PokerBot.Event.newBuilder(result.event_).mergeFrom(value).buildPartial();
-        } else {
-          result.event_ = value;
-        }
-        result.hasEvent = true;
-        return this;
-      }
-      public Builder clearEvent() {
-        result.hasEvent = false;
-        result.event_ = poker_bot.PokerBot.Event.getDefaultInstance();
-        return this;
-      }
     }
     
     static {
@@ -1070,22 +1030,21 @@ public final class PokerBot {
       "\006Action\022*\n\004type\030\001 \002(\0162\026.poker_bot.Action" +
       ".Type:\004FOLD\022\021\n\006amount\030\002 \001(\005:\0010\"0\n\004Type\022\010" +
       "\n\004FOLD\020\000\022\010\n\004CALL\020\001\022\t\n\005RAISE\020\002\022\t\n\005CHECK\020\003" +
-      "\"\340\004\n\005Event\022#\n\004type\030\001 \002(\0162\025.poker_bot.Eve" +
+      "\"\277\004\n\005Event\022#\n\004type\030\001 \002(\0162\025.poker_bot.Eve" +
       "nt.Type\022\021\n\tplayer_id\030\002 \001(\r\022\017\n\007credits\030\003 " +
       "\001(\r\022\016\n\006amount\030\004 \001(\005\022$\n\005cards\030\005 \003(\0132\025.pok" +
       "er_bot.Event.Card\022#\n\004card\030\006 \001(\0132\025.poker_" +
       "bot.Event.Card\022!\n\006action\030\007 \001(\0132\021.poker_b" +
       "ot.Action\022\014\n\004rank\030\010 \001(\r\022\017\n\007message\030\n \001(\t" +
-      "\022\037\n\005event\030\013 \001(\0132\020.poker_bot.Event\032x\n\004Car" +
-      "d\022\r\n\005value\030\001 \002(\005\022(\n\004suit\030\002 \002(\0162\032.poker_b" +
-      "ot.Event.Card.Suit\"7\n\004Suit\022\014\n\010DIAMONDS\020\000" +
-      "\022\n\n\006SPADES\020\001\022\n\n\006HEARTS\020\002\022\t\n\005CLUBS\020\003\"\325\001\n\004" +
-      "Type\022\010\n\004JOIN\020\000\022\r\n\tNEW_ROUND\020\001\022\n\n\006BUTTON\020" +
-      "\002\022\r\n\tBIG_BLIND\020\003\022\017\n\013SMALL_BLIND\020\004\022\010\n\004DEA" +
-      "L\020\005\022\010\n\004FLOP\020\006\022\010\n\004TURN\020\007\022\t\n\005RIVER\020\010\022\n\n\006AC" +
-      "TION\020\t\022\022\n\016ADJUST_CREDITS\020\n\022\007\n\003WIN\020\013\022\020\n\014E" +
-      "ND_OF_ROUND\020\014\022\010\n\004QUIT\020\r\022\013\n\007BAD_BOT\020\016\022\r\n\t" +
-      "YOUR_TURN\020\017";
+      "\032x\n\004Card\022\r\n\005value\030\001 \002(\005\022(\n\004suit\030\002 \002(\0162\032." +
+      "poker_bot.Event.Card.Suit\"7\n\004Suit\022\014\n\010DIA" +
+      "MONDS\020\000\022\n\n\006SPADES\020\001\022\n\n\006HEARTS\020\002\022\t\n\005CLUBS" +
+      "\020\003\"\325\001\n\004Type\022\010\n\004JOIN\020\000\022\r\n\tNEW_ROUND\020\001\022\n\n\006" +
+      "BUTTON\020\002\022\r\n\tBIG_BLIND\020\003\022\017\n\013SMALL_BLIND\020\004" +
+      "\022\010\n\004DEAL\020\005\022\010\n\004FLOP\020\006\022\010\n\004TURN\020\007\022\t\n\005RIVER\020" +
+      "\010\022\n\n\006ACTION\020\t\022\022\n\016ADJUST_CREDITS\020\n\022\007\n\003WIN" +
+      "\020\013\022\020\n\014END_OF_ROUND\020\014\022\010\n\004QUIT\020\r\022\013\n\007BAD_BO" +
+      "T\020\016\022\r\n\tYOUR_TURN\020\017";
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
@@ -1104,7 +1063,7 @@ public final class PokerBot {
           internal_static_poker_bot_Event_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_poker_bot_Event_descriptor,
-              new java.lang.String[] { "Type", "PlayerId", "Credits", "Amount", "Cards", "Card", "Action", "Rank", "Message", "Event", },
+              new java.lang.String[] { "Type", "PlayerId", "Credits", "Amount", "Cards", "Card", "Action", "Rank", "Message", },
               poker_bot.PokerBot.Event.class,
               poker_bot.PokerBot.Event.Builder.class);
           internal_static_poker_bot_Event_Card_descriptor =
