@@ -16,7 +16,7 @@ def main():
    outcome = game.run()
    end_time = time.time()
    print "Result:", outcome
-   print "Time elapsed:", (end_time - start_time), "seconds"
+   print "Time elapsed: %0.2f seconds" % (end_time - start_time)
 
 if __name__ == "__main__":
     import sys

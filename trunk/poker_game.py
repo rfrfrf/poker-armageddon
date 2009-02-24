@@ -5,6 +5,7 @@ import collections
 
 from cards import Deck, n_card_rank
 from messages import Event, Action
+from pot import Pot
 
 # TODO: basic game
 # TODO: side-pot splitting
@@ -14,52 +15,6 @@ from messages import Event, Action
 # TODO: example bot
 # TODO: protocol bot
 
-class Pot(object):
-    def __init__(self):
-        self.current_bet = 0
-        self.player_total = {}
-        self.all_in = {}
-        
-    @property
-    def total(self):
-        return sum(amount for amount in self.player_total.values())
-        
-    def bet(self, player, amount, all_in=False):
-        self.player_total.setdefault(player, 0)
-        player_bet = self.player_total[player] + amount
-        if self.all_in:
-            if self.all_in.get(player, False):
-                raise AlreadyAllIn(player)
-            self.all_in[player] = True
-        else:
-            if player_bet > self.current_bet:
-                # raise
-                self.current_bet = player_bet
-            elif player_bet < self.current_bet:
-                raise InsufficientBet(player, amount)
-            else:
-                # call
-                pass
-        self.player_total[player] = player_bet
-        
-    def split(self, hand_ranks):
-        if len(self.all_in) == 0:
-            # case with no all in players, easy
-            # see if there was a tie
-            raise NotImplementedError
-            max_rank = max(hand_ranks)
-            results = []
-            winners = [player for hand_rank, player in hand_ranks if hand_rank == max_rank]
-            # TODO: if not evenly divisible, extra credits go to the player
-            # first after the dealer button
-            credits = self.total / len(winners)
-            for winner in winners:
-                results.append((winner, credits))
-            return results
-        else:
-            hand_ranks = list(revered(sorted(hand_ranks)))
-            raise NotImplementedError 
-        
 class WinByDefault(Exception):
     def __init__(self, winner):
         self.winner = winner
@@ -84,7 +39,7 @@ class PokerGame(object):
         self.small_blind_amount = small_blind_amount
         random.seed() # seed with, hopefully, /dev/urandom
         for id, bot in enumerate(bots):
-            bot_instance = bot(id=id, initial_credits=initial_credits, small_blind_amount=self.small_blind_amount, big_blind_amount=self.big_blind_amount)
+            bot_instance = bot(id=id, credits=initial_credits, small_blind_amount=self.small_blind_amount, big_blind_amount=self.big_blind_amount)
             self.players.append(bot_instance)
             self.id[bot_instance] = id
             self.credits[bot_instance] = initial_credits
@@ -130,6 +85,7 @@ class PokerGame(object):
         print "Game Over"
         winner = self.active_players[0]
         print "Game Winner: %s with credits %d" % (winner, self.credits[winner])
+        return (winner, self.credits[winner])
             
     def print_state(self):
         for player in self.active_players:
@@ -367,4 +323,3 @@ class Round(object):
             print "Player: %s with %s using cards %s" % (player, hand_rank, cards)
             hand_ranks.append((hand_rank, player))
         return hand_ranks
-            
