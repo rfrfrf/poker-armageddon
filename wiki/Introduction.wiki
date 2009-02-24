@@ -36,6 +36,8 @@ Action.type == 'raise'
 Action.amount == 2
 }}}
 
+Events are similar, your bot receives an event for everything that goes on at the table (except cards dealt to other players).  Events can be broadcast to all players, or sent to specific ones.  The 'deal' event is sent to each player individually, since it contains the cards that player is dealt.  The 'bad_bot' event is the only other non-broadcast event in the Python interface (there is a 'your_turn' event in the protocol buffer one).
+
 == Actions ==
 
 'fold',
