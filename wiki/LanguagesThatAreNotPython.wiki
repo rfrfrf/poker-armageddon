@@ -21,9 +21,8 @@ Run 'main.py' in your checked out repository.
 
   # Download and install:
     * [http://prdownloads.sourceforge.net/dev-cpp/devcpp-4.9.9.2_nomingw_setup.exe Download Bloodshed C++] (the version without MinGW)
-    * [http://www.mingw.org/wiki/HOWTO_Install_the_MinGW_GCC_Compiler_Suite MinGW] select at least the g++ option in the install and use the candidate version (don't use the one that comes with bloodshed)
+    * [http://www.mingw.org/wiki/HOWTO_Install_the_MinGW_GCC_Compiler_Suite MinGW] select at least the g++ and Make options in the install and use the candidate version (don't use the one that comes with bloodshed)
       * you have to download [http://downloads.sourceforge.net/mingw/gcc-g%2B%2B-3.4.5-20060117-3.tar.gz?use_mirror=mesh g++] manually
-    * [http://www.mingw.org/wiki/MSYS MSYS]
   # Set Dev-Cpp to use the installed MinGW (add {{{c:\mingw\bin;C:\msys\1.0\bin}}} to your PATH environment variable)
   # Build example bot in {{{example_bots/java/foldbot}}}, comes with a Dev-Cpp project that should just work out of the box.
   # Edit main.py to use your bot
