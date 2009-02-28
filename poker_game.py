@@ -6,6 +6,7 @@ import collections
 from cards import Deck, n_card_rank
 from messages import Event, Action
 from pot import Pot
+from bot_wrapper import BotWrapper
 
 # TODO: correct handling of heads_up -> button selection etc
 # TODO: logging module
@@ -144,7 +145,7 @@ class Round(object):
         # deal each player 2 cards
         for player in self.players:
             hole_cards[player] = self.deck.take(2)
-            self.game.send_event(player, Event('deal', cards=hole_cards[player]))
+            self.game.send_event(player, Event('deal', cards=copy.copy(hole_cards[player])))
         
         try:
             # first round of betting, no 'check' allowed unless you're the big
@@ -153,7 +154,7 @@ class Round(object):
         
             # flop
             community_cards = self.deck.take(3)
-            self.game.broadcast_event(Event('flop', cards=community_cards))
+            self.game.broadcast_event(Event('flop', cards=copy.copy(community_cards)))
         
             self.betting_round(2, self.button, self.pot)
         
@@ -259,7 +260,7 @@ class Round(object):
                 current_player = self.next_player(current_player)
                 continue
             
-            action = current_player.turn()
+            action = self.run_turn(current_player)
             def warn(message):
                 self.game.send_event(current_player, Event('bad_bot', message=message, action=action))
                 

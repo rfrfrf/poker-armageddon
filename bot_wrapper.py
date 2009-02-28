@@ -1,3 +1,5 @@
+from messages import Action
+
 class BotWrapper(object):
     def __init__(self, bot, *args, **kwargs):
         self.id = kwargs['id']
@@ -9,4 +11,11 @@ class BotWrapper(object):
         return input_action
         
     def turn(self):
-        return self.bot.turn()
+        try:
+            return self.bot.turn()
+        except Exception, e:
+            print "bot threw exception:",e
+            return Action('fold')
+            
+    def __repr__(self):
+        return self.bot.__repr__()
