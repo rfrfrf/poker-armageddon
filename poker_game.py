@@ -31,7 +31,7 @@ class PokerGame(object):
         if seed is None:
             random.seed() # seed with, hopefully, /dev/urandom
             seed = random.randint(0, 2**32)
-        print "Dealer: random seed: ", seed
+        self.output("random seed: %d" % seed)
         random.seed(seed)
         
         for id, bot in enumerate(bots):
@@ -204,6 +204,7 @@ class Round(object):
         return small_blind, big_blind
         
     def bet(self, player, amount):
+        assert(player not in self.all_in)
         if self.game.credits[player] <= amount:
             amount = self.game.credits[player]
             self.all_in.append(player)
@@ -214,53 +215,6 @@ class Round(object):
         
     def next_player(self, player):
         return self.get_player(self.players.index(player)+1)
-        
-    def handle_action(self, player, action):
-        def warn(message):
-            self.game.send_event(player, Event('bad_bot', message=message, action=action))
-            
-        if action is None or \
-              getattr(action, 'type', None) not in ['fold', 'call', 'raise', 'check'] or \
-              action.type == 'raise' and not hasattr(action, 'amount'):
-            warn('invalid action, folding')
-            return self.handle_action(player, Action('fold'))
-                
-        if action.type == 'raise':
-            if action.amount <=0 or self.game.credits[current_player] < action.amount:
-                warn('invalid raise, calling')
-                return self.handle_action(player, Action('call'))
-            else:
-                amount_to_bet = action.amount
-                if self.game.credits[current_player] < amount_to_bet:
-                    warn('tried to raise more than player possesses, betting maximum')
-                current_bet += amount_to_bet
-                self.bet(current_player, amount_to_bet)
-                player_bets[current_player] += amount_to_bet
-                self.has_bet = {player: True}
-                
-        if action.type == 'call':
-            if current_bet == 0:
-                warn('tried to call on zero bet, checking')
-                return self.handle_action(player, Action('check'))
-            elif current_bet == player_bets[current_player]:
-                warn('tried to call but had already bet that amount, should have checked, checking')
-                return self.handle_action(player, Action('check'))
-            else:
-                amount_to_bet = current_bet-player_bets[current_player]
-                self.bet(current_player, amount_to_bet)
-                player_bets[current_player] += amount_to_bet
-                self.has_bet[player] = True
-                
-        if action.type == 'check':
-            # can only check if current bet is zero
-            if current_bet != player_bets[current_player]:
-                warn('tried to check when not up to current bet, calling')
-                return self.handle_action(player, Action('call'))
-            else:
-                self.has_bet[player] = True
-            
-        if action.type == 'fold':
-            self.active_players.remove(current_player)
         
     def betting_round(self, n, button, pot):
         player_bets = {}
@@ -320,13 +274,15 @@ class Round(object):
                     warn('invalid raise, calling')
                     action = Action('call')
                 else:
-                    amount_to_bet = action.amount
+                    amount_to_bet = action.amount + (current_bet - player_bets[current_player])
                     if self.game.credits[current_player] < amount_to_bet:
                         warn('tried to raise more than player possesses, betting maximum')
-                    current_bet += amount_to_bet
+                        amount_to_bet = self.game.credits[current_player]
+                    if player_bets[current_player] + amount_to_bet > current_bet:
+                        current_bet = player_bets[current_player] + amount_to_bet
                     self.bet(current_player, amount_to_bet)
                     player_bets[current_player] += amount_to_bet
-                    self.has_bet = {player: True}
+                    self.has_bet = {current_player: True}
                     
             if action.type == 'call':
                 if current_bet == 0:
@@ -339,7 +295,7 @@ class Round(object):
                     amount_to_bet = current_bet-player_bets[current_player]
                     self.bet(current_player, amount_to_bet)
                     player_bets[current_player] += amount_to_bet
-                    self.has_bet[player] = True
+                    self.has_bet[current_player] = True
                     
             if action.type == 'check':
                 if current_bet != player_bets[current_player]:
@@ -348,16 +304,16 @@ class Round(object):
                     amount_to_bet = current_bet-player_bets[current_player]
                     self.bet(current_player, amount_to_bet)
                     player_bets[current_player] += amount_to_bet
-                    self.has_bet[player] = True
+                    self.has_bet[current_player] = True
                 else:
-                    self.has_bet[player] = True
+                    self.has_bet[current_player] = True
                 
             if action.type == 'fold':
                 self.active_players.remove(current_player)
                 
             self.game.broadcast_event(Event('action', action=action, player_id=self.game.id[current_player]))
             current_player = self.next_player(current_player)
-             
+            
         self.game.output("End of betting round %d" % n)
             
     def determine_ranking(self, community_cards, hole_cards):
