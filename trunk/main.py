@@ -11,12 +11,13 @@ def main():
    from bots.callbot import CallBot
    from example_bots.protobot.cpp.foldbot_cpp import FoldBotCpp
    from example_bots.protobot.java.foldbot_java import FoldBotJava
+   from example_bots.protobot.java.boten_anna import Anna
    # uncomment this line to run the CPP foldbot
    #bots = [ExampleBot, FoldBotCpp]
    seed = None
    if len(sys.argv) > 1:
        seed = int(sys.argv[1])
-   bots = [FoldBot, RaiseTwentyBot, CallBot]
+   bots = [FoldBot, RaiseTwentyBot, CallBot, Anna]
    game = PokerGame(bots=bots, seed=seed)
    start_time = time.time()
    outcome = game.run()
@@ -31,5 +32,5 @@ if __name__ == "__main__":
     except Exception, e:
         print ""
         traceback.print_exc()
-        if platform.system() == 'Windows':
-            raw_input('\nPress enter to continue')
+    if platform.system() == 'Windows':
+        raw_input('\nPress enter to continue')
