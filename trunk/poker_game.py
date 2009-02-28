@@ -7,11 +7,9 @@ from cards import Deck, n_card_rank
 from messages import Event, Action
 from pot import Pot
 
-# TODO: basic game
 # TODO: correct handling of heads_up -> button selection etc
 # TODO: logging module
 # TODO: player wrapper with credits, id, __str__ etc, move action sanitizing into there
-# TODO: example bot
 # TODO: less retarded example bot
 # TODO: more docs
 
@@ -169,12 +167,12 @@ class Round(object):
             player = e.winner
             credits = self.pot.total
             # TODO: win should indicate amount won, (gained over previous round)
-            self.game.broadcast_event(Event('win', player_id=self.game.id[player], rank=1, amount=credits))
+            self.game.broadcast_event(Event('win', player_id=self.game.id[player], rank=0, amount=credits))
             self.game.adjust_credits(player, credits)
         else:
             ranking = self.determine_ranking(community_cards, hole_cards)
-            for player, credits in self.pot.split(ranking):
-                self.game.broadcast_event(Event('win', player_id=self.game.id[player], amount=credits))
+            for rank, (credits, player) in enumerate(reversed(sorted(self.pot.split(ranking)))):
+                self.game.broadcast_event(Event('win', player_id=self.game.id[player], rank=rank, amount=credits))
                 self.game.adjust_credits(player, credits)
                 
     def run_turn(self, player):

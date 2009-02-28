@@ -31,7 +31,6 @@ import protocol.python.lib.poker_messaging as messaging
 from messages import Event, Action
 from bot import Bot
 
-
 # process control functions, not available on windows
 import platform
 if platform.system() == 'Windows':
@@ -170,20 +169,22 @@ class ProtoBot(Bot):
         """
         Send all events to the bot and then get the bot's action
         """
+        self.log("bot's turn")
         continue_process(self.p)
-        print "bot's turn"
         # write the events to the child, then tell the child that it is
         # his turn
+        self.log("sending events to bot")
         for event in self.event_queue:
             self.send_event(event)
         self.event_queue = []
             
         self.send_event(Event(type='your_turn'))
         
-        print "waiting for response from bot"
+        self.log("waiting for response from bot")
         # get the action produced by the bot
         action = self.receive_action()
-        print "end of bot's turn"
+        self.log("got response from bot")
         stop_process(self.p)
+        self.log("end of bot's turn")
         return action
             

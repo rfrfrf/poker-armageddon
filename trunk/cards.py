@@ -3,7 +3,7 @@ HIGH_CARD, ONE_PAIR, TWO_PAIR, THREE_OF_A_KIND, STRAIGHT, FLUSH, FULL_HOUSE, FOU
 import random
 
 class Deck(object):
-    def __init__(self):
+    def __init__(self, num_decks=1):
         """
         Generate a list of cards for num_decks decks, 52 cards per deck.
     
@@ -25,7 +25,7 @@ class Deck(object):
             [(2, 'd'), (4, 's'), ...]
         """
         self.all_cards = []
-        for deck in range(1):
+        for deck in range(num_decks):
             for suit in 'dshc':
                 for value in range(2,15):
                     self.all_cards.append((value, suit))
@@ -79,16 +79,12 @@ def hand_rank(hand):
     compare two tuples, the values in the tuple are compared in order until
     one is found that is different from the other, just like comparing strings.
     
-    Alternatively they could be represented with a 24-bit hex number, but
-    that wouldn't really make anything more clear.
-    
     The first number in the tuple is the overall rank of the hand, the other
     numbers are only useful for comparing two hands of the same overall rank,
     for example, two two-pair hands are compared first on the rank of their
     respective pairs, then, if those are equal, on the other cards in the hand.
-    
-    Could probably be more efficient using some sort of statemachine, perhaps
-    regular expressions instead of normal code.
+
+    This function is not particularly efficient.
     
     Example:
     
@@ -175,7 +171,8 @@ def hand_rank(hand):
     
 def n_card_rank(cards):
     """
-    Find the highest rank for a set of n cards
+    Find the highest rank for a set of n cards.  Simply ranks all 5 card hands
+    in the 7 cards and returns the highest.
     
     >>> n_card_rank([(10, 'h'), (10, 'd'), (10, 'h'), (10, 's'), (5, 'd'), (4, 'd'), (3, 'd')])
     (7, 10, 5)

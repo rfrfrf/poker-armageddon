@@ -18,6 +18,13 @@ class Pot(object):
     """
     Object to keep track of bets and decide the final splitting of money at
     the end of the round.
+        
+    The .bet method is used for each bet by a player, it will raise AlreadyAllIn
+    if the player is betting after being all in and InsufficientBet if
+    the bet by a player does not met or exceed the current bet level.
+    
+    The .total property can be used to get the current amount of money stored
+    in the pot.
     """
     def __init__(self):
         self.current_bet = 0
@@ -52,19 +59,16 @@ class Pot(object):
         """
         self.player_total.setdefault(player, 0)
         player_bet = self.player_total[player] + amount
+        if self.all_in.get(player, False):
+            raise AlreadyAllIn(player)
         if all_in:
-            if self.all_in.get(player, False):
-                raise AlreadyAllIn(player)
             self.all_in[player] = True
         else:
-            if player_bet > self.current_bet:
-                # raise
-                self.current_bet = player_bet
-            elif player_bet < self.current_bet:
+            if player_bet < self.current_bet:
                 raise InsufficientBet(player, amount)
             else:
-                # call
-                pass
+                # raise/call
+                self.current_bet = player_bet
         self.player_total[player] = player_bet
         
     def get_winner_groups(self, ranking):
@@ -146,10 +150,12 @@ class Pot(object):
             pots, winners = self.split_group(pots, group)
             for player, amount in winners:
                 if amount > 0:
-                    yield (player, amount)
+                    yield (amount, player)
                     
 def doctest_pot():
     """
+    Tests to make sure the pot splits correctly.
+    
     >>> pot = Pot()
     >>> pot.bet('p1', 10)
     >>> ranking = [(1, 'p1')]
