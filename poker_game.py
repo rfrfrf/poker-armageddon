@@ -19,14 +19,21 @@ class WinByDefault(Exception):
 
 class PokerGame(object):
     def __init__(self, bots, initial_credits=10000, num_decks=1,
-            small_blind_amount=10):
+            small_blind_amount=10, seed=None):
         self.players = []
         self.credits = {}
         self.id = {}
         self.deck = Deck()
         # big blind amount is 2x small_blind_amount
         self.small_blind_amount = small_blind_amount
-        random.seed() # seed with, hopefully, /dev/urandom
+        
+        # initialize randomness
+        if seed is None:
+            random.seed() # seed with, hopefully, /dev/urandom
+            seed = random.randint(0, 2**32)
+        print "Dealer: random seed: ", seed
+        random.seed(seed)
+        
         for id, bot in enumerate(bots):
             bot_instance = bot(id=id, credits=initial_credits, small_blind_amount=self.small_blind_amount, big_blind_amount=self.big_blind_amount)
             self.players.append(bot_instance)
@@ -119,9 +126,10 @@ class Round(object):
         self.deck = copy.copy(game.deck)
         self.deck.shuffle()
         self.players = copy.copy(game.active_players)
+        self.active_players = copy.copy(self.players)
         self.button = button
         self.pot = Pot()
-        self.all_in = collections.defaultdict(bool)
+        self.all_in = []
         
     def run(self):
         self.game.broadcast_event(Event('button', player_id=self.game.id[self.button]))
@@ -171,7 +179,7 @@ class Round(object):
             self.game.adjust_credits(player, credits)
         else:
             ranking = self.determine_ranking(community_cards, hole_cards)
-            for rank, (credits, player) in enumerate(reversed(sorted(self.pot.split(ranking)))):
+            for rank, (player, credits) in enumerate(reversed(sorted(self.pot.split(ranking)))):
                 self.game.broadcast_event(Event('win', player_id=self.game.id[player], rank=rank, amount=credits))
                 self.game.adjust_credits(player, credits)
                 
@@ -196,19 +204,67 @@ class Round(object):
         return small_blind, big_blind
         
     def bet(self, player, amount):
-        if self.game.credits[player] < amount:
-            self.all_in[player] = True
+        if self.game.credits[player] <= amount:
             amount = self.game.credits[player]
+            self.all_in.append(player)
         # if the player is all in, indicate that to the pot
-        self.pot.bet(player, amount, self.all_in[player])
+        all_in = player in self.all_in
+        self.pot.bet(player, amount, all_in)
         self.game.adjust_credits(player, -amount)
         
     def next_player(self, player):
         return self.get_player(self.players.index(player)+1)
         
+    def handle_action(self, player, action):
+        def warn(message):
+            self.game.send_event(player, Event('bad_bot', message=message, action=action))
+            
+        if action is None or \
+              getattr(action, 'type', None) not in ['fold', 'call', 'raise', 'check'] or \
+              action.type == 'raise' and not hasattr(action, 'amount'):
+            warn('invalid action, folding')
+            return self.handle_action(player, Action('fold'))
+                
+        if action.type == 'raise':
+            if action.amount <=0 or self.game.credits[current_player] < action.amount:
+                warn('invalid raise, calling')
+                return self.handle_action(player, Action('call'))
+            else:
+                amount_to_bet = action.amount
+                if self.game.credits[current_player] < amount_to_bet:
+                    warn('tried to raise more than player possesses, betting maximum')
+                current_bet += amount_to_bet
+                self.bet(current_player, amount_to_bet)
+                player_bets[current_player] += amount_to_bet
+                self.has_bet = {player: True}
+                
+        if action.type == 'call':
+            if current_bet == 0:
+                warn('tried to call on zero bet, checking')
+                return self.handle_action(player, Action('check'))
+            elif current_bet == player_bets[current_player]:
+                warn('tried to call but had already bet that amount, should have checked, checking')
+                return self.handle_action(player, Action('check'))
+            else:
+                amount_to_bet = current_bet-player_bets[current_player]
+                self.bet(current_player, amount_to_bet)
+                player_bets[current_player] += amount_to_bet
+                self.has_bet[player] = True
+                
+        if action.type == 'check':
+            # can only check if current bet is zero
+            if current_bet != player_bets[current_player]:
+                warn('tried to check when not up to current bet, calling')
+                return self.handle_action(player, Action('call'))
+            else:
+                self.has_bet[player] = True
+            
+        if action.type == 'fold':
+            self.active_players.remove(current_player)
+        
     def betting_round(self, n, button, pot):
         player_bets = {}
-        has_bet = {}
+        self.has_bet = {}
         # TODO: don't let player keep betting if it's just him and all_in guys
         for player in self.players:
             player_bets[player] = 0
@@ -222,11 +278,30 @@ class Round(object):
         else:
             current_player = self.get_player(self.players.index(button) + 1)
             current_bet = 0
+             
+        self.game.output("Start of betting round %d" % n)
             
         while True:
+            if len(self.active_players) == 1:
+                winner = self.active_players[0]
+                self.game.output("Player %s won when everyone else folded" % winner)
+                raise WinByDefault(winner)
+                
+            # figure out if this betting round is over
+            for player in self.active_players:
+                if player not in self.has_bet and player not in self.all_in:
+                    break # found a player that can still make an action
+            else:
+                break # all players have bet, folded, or are all in, break out of the while loop
+                
             # if player is all in, he does not get another turn
-            if self.all_in[current_player]:
+            if current_player in self.all_in:
                 self.game.output("Player is all in, skipping %s" % current_player)
+                current_player = self.next_player(current_player)
+                continue
+                
+            if current_player not in self.active_players:
+                self.game.output("Player has folded, skipping %s" % current_player)
                 current_player = self.next_player(current_player)
                 continue
             
@@ -239,76 +314,56 @@ class Round(object):
                   action.type == 'raise' and not hasattr(action, 'amount'):
                 warn('invalid action, folding')
                 action = Action('fold')
-            
-            # check that the bet is good
+                    
+            if action.type == 'raise':
+                if action.amount <=0 or self.game.credits[current_player] < action.amount:
+                    warn('invalid raise, calling')
+                    action = Action('call')
+                else:
+                    amount_to_bet = action.amount
+                    if self.game.credits[current_player] < amount_to_bet:
+                        warn('tried to raise more than player possesses, betting maximum')
+                    current_bet += amount_to_bet
+                    self.bet(current_player, amount_to_bet)
+                    player_bets[current_player] += amount_to_bet
+                    self.has_bet = {player: True}
+                    
             if action.type == 'call':
                 if current_bet == 0:
-                    warn('tried to call on zero bet, folding')
-                    action = Action('fold')
+                    warn('tried to call on zero bet, checking')
+                    action = Action('check')
                 elif current_bet == player_bets[current_player]:
                     warn('tried to call but had already bet that amount, should have checked, checking')
                     action = Action('check')
                 else:
                     amount_to_bet = current_bet-player_bets[current_player]
-                    if self.game.credits[current_player] < amount_to_bet:
-                        amount_to_bet = self.game.credits[current_player]
-                        self.all_in[current_player] = True
                     self.bet(current_player, amount_to_bet)
                     player_bets[current_player] += amount_to_bet
-                    has_bet[player] = True
-                    
-            if action.type == 'raise':
-                if action.amount <=0 or self.game.credits[current_player] < action.amount:
-                    warn('invalid raise, folding')
-                    action = Action('fold')
-                else:
-                    amount_to_bet = action.amount
-                    if self.game.credits[current_player] == amount_to_bet:
-                        amount_to_bet = self.game.credits[current_player]
-                        self.all_in[current_player] = True
-                    elif self.game.credits[current_player] < amount_to_bet:
-                        warn('tried to raise more than player possesses, betting maximum')
-                        amount_to_bet = self.game.credits[current_player]
-                        self.all_in[current_player] = True
-                    current_bet += amount_to_bet
-                    self.bet(current_player, amount_to_bet)
-                    player_bets[current_player] += amount_to_bet
-                    has_bet = {player: True}
+                    self.has_bet[player] = True
                     
             if action.type == 'check':
-                # can only check if current bet is zero
-                if current_bet != 0:
-                    warn('tried to check after bet was made, folding')
-                    action = Action('fold')
+                if current_bet != player_bets[current_player]:
+                    warn('tried to check when not up to current bet, calling')
+                    # TODO: action = Action('call')
+                    amount_to_bet = current_bet-player_bets[current_player]
+                    self.bet(current_player, amount_to_bet)
+                    player_bets[current_player] += amount_to_bet
+                    self.has_bet[player] = True
                 else:
-                    has_bet[player] = True
+                    self.has_bet[player] = True
                 
             if action.type == 'fold':
-                next_player = self.next_player(current_player)
-                self.players.remove(current_player)
-            else:
-                next_player = self.next_player(current_player)
+                self.active_players.remove(current_player)
                 
             self.game.broadcast_event(Event('action', action=action, player_id=self.game.id[current_player]))
-            current_player = next_player
-                    
-            if len(self.players) == 1:
-                winner = self.players[0]
-                self.game.output("Player %s won when everyone else folded" % winner)
-                raise WinByDefault(winner)
-                
-            # break out of this loop if all players have bet
-            for player in self.players:
-                if player not in has_bet and not self.all_in[player]:
-                    break
-            else:
-                break
+            current_player = self.next_player(current_player)
+             
         self.game.output("End of betting round %d" % n)
             
     def determine_ranking(self, community_cards, hole_cards):
         # determine the best hand for each player
         hand_ranks = []
-        for player in self.players:
+        for player in self.active_players:
             cards = community_cards + hole_cards[player]
             hand_rank = n_card_rank(cards)
             self.game.output("Player: %s with %s using cards %s" % (player, hand_rank, cards))

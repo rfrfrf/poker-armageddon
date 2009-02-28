@@ -1,3 +1,5 @@
+from messages import Action
+
 class Bot(object):
     def __init__(self, id, credits, big_blind_amount, small_blind_amount, *args, **kwargs):
         self.id = id
@@ -7,15 +9,23 @@ class Bot(object):
         self.small_blind_amount = small_blind_amount
         self.event_queue = []
         
-    def log(self, message):
+    def get_name(self):
         if hasattr(self, 'name'):
-            name = self.name
+            return self.name
         else:
-            name = self.__class__.__name__
-        print '%s(%d): %s' % (name, self.id, message)
+            return self.__class__.__name__
+        
+    def log(self, message):
+        print '%s(%d): %s' % (self.get_name(), self.id, message)
+        
+    def action(self, type, amount=None):
+        action = Action(type=type)
+        if amount is not None:
+            action.amount = amount
+        return action
     
     def turn(self):
         raise NotImplementedError
         
-    def __str__(self):
-        return "<Bot player_id=%d>" % (self.id)
+    def __repr__(self):
+        return "<%s player_id=%d>" % (self.get_name(), self.id)
