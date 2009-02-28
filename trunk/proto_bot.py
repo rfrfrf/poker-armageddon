@@ -77,8 +77,8 @@ def event_to_pbevent(event):
         print "ERROR: could not convert event type '%s'" % event.type.upper()
     # set cards, if applicable
     if hasattr(event, 'cards'):
-        pb_card = pb_event.cards.add()
         for card in event.cards:
+            pb_card = pb_event.cards.add()
             card_to_pbcard(card, pb_card)
     # set card, if applicable
     if hasattr(event, 'card'):
