@@ -1,5 +1,5 @@
 from bot import Bot
-from poker_game import Action
+from messages import Action
 
 class ExampleBot(Bot):
     def turn(self):

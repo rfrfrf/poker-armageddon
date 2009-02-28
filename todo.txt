@@ -1,11 +1,35 @@
+1. rules
+2. bots
+
+
+
 bot overlay
 	threads
 		time limits
 	credits
 	RaiseTwentyBot fixes
+	CallBot
+	AllInBot
+	better str to represent bot
 	
 receive_event instead of receive_message
 better foldbot.py
 wrapper classes for protocol buffer classes?
 
 fixed .card on event object, fixed error in protocol definition (unused event property) -> test
+
+hella documentation
+
+restrictedpython?
+
+efficient hand evaluator
+
+simplify game logic and pot where possible
+
+make the poker framework a package and change imports to poker.<etc>
+	make a name that doesn't suck a dick
+	need a script/other shit to make configuring games easier
+	game stats - graphs?
+	log to file/better logging
+
+make all bots proto_bots?

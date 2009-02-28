@@ -6,6 +6,13 @@ class Bot(object):
         self.big_blind_amount = big_blind_amount
         self.small_blind_amount = small_blind_amount
         self.event_queue = []
+        
+    def log(self, message):
+        if hasattr(self, 'name'):
+            name = self.name
+        else:
+            name = self.__class__.__name__
+        print '%s(%d): %s' % (name, self.id, message)
     
     def turn(self):
         raise NotImplementedError
