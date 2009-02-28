@@ -69,7 +69,10 @@ def event_to_pbevent(event):
     # the protocol_event
     keys = [key for key in dir(event) if not key.startswith('_') and key not in ['type', 'cards', 'action', 'card']]
     for key in keys:
-        setattr(pb_event, key, getattr(event, key))
+        value = getattr(event, key)
+        if key in ['amount', 'credits']:
+            value = int(value)
+        setattr(pb_event, key, value)
     # set type
     if hasattr(protocol.Event, event.type.upper()):
         pb_event.type = getattr(protocol.Event, event.type.upper())
@@ -97,7 +100,7 @@ def action_to_pb_action(action):
     pb_action.type = getattr(protocol.Action, action.type.upper())
     # set amount if applicable
     if hasattr(action, 'amount'):
-        pb_action.amount = action.amount
+        pb_action.amount = int(action.amount)
     return pb_action
     
 def pb_action_to_action(pb_action):

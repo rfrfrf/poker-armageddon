@@ -50,6 +50,6 @@ make the poker framework a package and change imports to poker.<etc>
 	statistical functions for all bot types
 	debugging: record/replay
 
-make all bots proto_bots?
+make all bots proto_bots? probably a good idea
 
 look at TODO: items
