@@ -28,7 +28,7 @@ class Pot(object):
     """
     def __init__(self):
         self.current_bet = 0
-        self.player_total = {}
+        self.player_total = collections.defaultdict(int)
         self.all_in = {}
         
     @property
@@ -66,9 +66,8 @@ class Pot(object):
         else:
             if player_bet < self.current_bet:
                 raise InsufficientBet(player, amount)
-            else:
-                # raise/call
-                self.current_bet = player_bet
+        # raise/call
+        self.current_bet = player_bet
         self.player_total[player] = player_bet
         
     def get_winner_groups(self, ranking):
@@ -131,11 +130,11 @@ class Pot(object):
         for _, player in list(sorted(all_in_players)):
             player_total, pot_total = self.subtract(player_total, player_total[player])
             # index them according to the player's original final bet
-            pots[self.player_total[player]] = pot_total
+            pots[self.player_total[player]] += pot_total
         # the remainder is a sort of final pot
         pots[self.current_bet] += sum(amount for amount in player_total.values())
         return pots
-        
+
     def split(self, ranking):
         """
         A slightly complicated way of calculating who wins what based on the
@@ -146,22 +145,30 @@ class Pot(object):
         """
         assert(len(ranking) > 0)
         pots = self.create_pots()
+        total = self.total
+        amount_distributed = 0
         for group in self.get_winner_groups(ranking):
             pots, winners = self.split_group(pots, group)
             for player, amount in winners:
                 if amount > 0:
-                    yield (amount, player)
+                    amount_distributed += amount
+                    yield (player, amount)
+        # this will be false if there is left over money in the pot,
+        # for instance if you don't provide a complete ranking to the pot
+        assert(amount_distributed == total)
                     
 def doctest_pot():
     """
     Tests to make sure the pot splits correctly.
     
+    Most basic pot:
     >>> pot = Pot()
     >>> pot.bet('p1', 10)
     >>> ranking = [(1, 'p1')]
     >>> print list(pot.split(ranking))
     [('p1', 10)]
     
+    Pot goes to one player:
     >>> pot = Pot()
     >>> pot.bet('p1', 100)
     >>> pot.bet('p2', 100)
@@ -169,6 +176,7 @@ def doctest_pot():
     >>> print list(pot.split(ranking))
     [('p2', 200)]
     
+    Pot is split between two players:
     >>> pot = Pot()
     >>> pot.bet('p1', 100)
     >>> pot.bet('p2', 100)
@@ -225,12 +233,51 @@ def doctest_pot():
     
     >>> pot = Pot()
     >>> pot.bet('p1', 50, all_in=True)
+    >>> pot.bet('p2', 50, all_in=True)
+    >>> pot.bet('p3', 100)
+    >>> pot.bet('p4', 100)
+    >>> ranking = [(3, 'p1'), (3, 'p2'), (2, 'p3')]
+    >>> print list(sorted(pot.split(ranking)))
+    [('p1', 100), ('p2', 100), ('p3', 100)]
+    
+    Incomplete ranking, there is left over money that should go to either
+    p3 or p4:
+    >>> pot = Pot()
+    >>> pot.bet('p1', 50, all_in=True)
+    >>> pot.bet('p2', 50, all_in=True)
+    >>> pot.bet('p3', 100)
+    >>> pot.bet('p4', 100)
+    >>> ranking = [(3, 'p1'), (3, 'p2')]
+    >>> print list(sorted(pot.split(ranking)))
+    Traceback (most recent call last):
+        ...
+    AssertionError
+    
+    >>> pot = Pot()
+    >>> pot.bet('p1', 50, all_in=True)
     >>> pot.bet('p2', 80, all_in=True)
     >>> pot.bet('p3', 100)
     >>> pot.bet('p4', 100)
     >>> ranking = [(3, 'p1'), (2, 'p2'), (1, 'p3')]
     >>> print list(sorted(pot.split(ranking)))
     [('p1', 200), ('p2', 90), ('p3', 40)]
+    
+    >>> pot = Pot()
+    >>> pot.bet('p1', 10)
+    >>> pot.bet('p2', 10000, all_in=True)
+    >>> pot.bet('p3', 10000, all_in=True)
+    >>> ranking = [(1, 'p2'), (2, 'p3')]
+    >>> print list(sorted(pot.split(ranking)))
+    [('p3', 20010)]
+    
+    Highest players are all in:
+    >>> pot = Pot()
+    >>> pot.bet('p1', 10)
+    >>> pot.bet('p2', 10000, all_in=True)
+    >>> pot.bet('p3', 10010, all_in=True)
+    >>> ranking = [(2, 'p2'), (1, 'p3')]
+    >>> print list(sorted(pot.split(ranking)))
+    [('p2', 20010), ('p3', 10)]
     """
     pass
     
