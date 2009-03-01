@@ -40,39 +40,46 @@ Events are similar, your bot receives an event for everything that goes on at th
 
 == Actions ==
 
-'fold',
-    fold means you quit this round
-'call', 
-   call means you match the current high bet
-'raise' amount
-   raise means you match the current high bet and add some amount to it
-'check' (not available on first round, except for the big blind)
-   a check is just a pass
+  * type <properties>
+  * 'fold',
+    * fold means you quit this round
+  * 'call', 
+    * call means you match the current high bet
+  * 'raise' amount
+    * raise means you match the current high bet and add some amount to it
+  * 'check' (not available on first round, except for the big blind)
+    * a check is just a pass
 
 == Events ==
 
-  * (type) (properties)
+  * type <properties>
   * 'join' player_id credits
   * 'new_round'
   * 'button' player_id
   * 'big_blind' player_id
   * 'small_blind' player_id
   * 'deal' cards
-  * 'flop' cards -> first three community cards
-  * 'turn' card  -> fourth community card
-  * 'river' card -> fifth community card
-  * 'action' player_id action
-  * 'adjust_credits'  player_id (+/-)amount
-  * 'win' player_id rank amount -> there is also an adjust_credits event for this
-                            in the case that there are multiple winners
-                            the rank will indicate who won first, second etc (int)
+  * 'flop' cards
+  * 'turn' card
+     * fourth community card
+  * 'river' card
+     * fifth community card
+  * 'action' player_id=number action=Action
+  * 'adjust_credits'  player_id=number amount=number (positive or negative)
+  * 'win' player_id=number rank=number amount=number
+     * there is also an adjust_credits event for this
+        in the case that there are multiple winners
+        the rank will indicate who won first, second etc (int, starts at zero)
   * 'end_of_round'
-  * 'quit' player_id
-  * 'bad_bot' message action -> last action by your bot was determined to be invalid
+  * 'quit' player_id=number
+  * 'bad_bot' message=string action=Action
+     * last action by your bot was determined to be invalid
+ 
+== Basic Types ==
 
-=== property types ===
-  * credits: int
-  * player_id: int
-  * card: (rank, suit) -> (int, char) -> int is 2-14 for card value, char is one of 'd', 'h', 's', 'c'
-  * action: one of the actions from above
-  * message: str
+  * player_id := number
+  * action := Action
+  * credits := number
+  * message := string
+  * card := (value, 'suit') where value is a number 2-14 and suit is a string from ['d', 'h', 's', 'c']
+cards := [card, card, ...]
