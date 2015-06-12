@@ -1,0 +1,1 @@
+A small Python framework for testing poker bots.
